@@ -8,7 +8,7 @@ import typer
 from pprint import pprint
 import sys
 
-XPATH_TEXT_WITHOUT_SCRIPTS = etree.ETXPath("body//*[not(self::script)]/text()")
+XPATH_TEXT_WITHOUT_SCRIPTS = etree.ETXPath("body//*[not(self::script) and not(self::style)]/text()")
 
 def write_matches(matches: Iterable, file: TextIO=sys.stdout) -> None:
     for match in matches:
