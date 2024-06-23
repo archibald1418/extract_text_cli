@@ -1,4 +1,4 @@
-from typing import Optional, Iterable, List, Any, AnyStr
+from typing import Optional, Iterable, List, Any, AnyStr, TextIO
 from typing_extensions import Annotated
 import requests
 from requests.exceptions import ConnectionError
@@ -6,10 +6,19 @@ from http import HTTPStatus
 from lxml import etree
 import typer
 from pprint import pprint
+import sys
 
 XPATH_TEXT_WITHOUT_SCRIPTS = etree.ETXPath("body//*[not(self::script)]/text()")
 
-def main(link: str, file: Annotated[Optional[str], typer.Argument()] = None):
+def write_matches(matches: Iterable, file: TextIO=sys.stdout) -> None:
+    for match in matches:
+        if (stripped := match.strip()):
+            file.write(stripped)
+            file.write('\n')
+        
+
+
+def main(link: str, file: Annotated[Optional[str], typer.Argument()] = None) -> None:
     # TODO: errors: bad link, bad response
     res: requests.Response = requests.get(link)
     match res.status_code:
@@ -25,10 +34,11 @@ def main(link: str, file: Annotated[Optional[str], typer.Argument()] = None):
     output = '\n'.join(matches)
 
     if file:
-        with open(file, 'w') as f:
-            f.write(output)
+        with open(file, 'w') as file:
+            write_matches(matches, file)
     else:
-        print(output)
+        write_matches(matches)
+        # print(output)
     
 
 
